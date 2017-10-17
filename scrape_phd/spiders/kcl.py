@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
-#def get_row()
-#
-#def get_name()
-#
-#def get_email()
-#
-#def get_bio()
-
+from bs4 import BeautifulSoup
+import csv
+import re
+regex = re.compile('[^a-zA-Z ]')
 
 class KclSpider(scrapy.Spider):
     name = "kcl"
     start_urls = [
         'https://www.kcl.ac.uk/nms/depts/informatics/people/phdstudents.aspx/'
     ]
-    download_delay = 1.5
 
     def parse(self, response):
-        filename = "kcl.html"
-        rows = response.css("tr")
-        with open(filename, 'wb') as f:
-            for row in rows:
-                f.write(row.extract())
+        filename = "kcl.csv"
+        soup = BeautifulSoup(response.text, 'lxml')
+        with open(filename, 'w') as f:
+            writer = csv.writer(f, delimiter=',')
+            for row in soup.find_all("tr")[1:]:
+                name = row.contents[1].text.strip()
+                name = regex.sub('', name)
+                email = (row.contents[3].text+'@kcl.ac.uk').strip()
+                print("{}, {}".format(name, email))
+                writer.writerow([name, email])
         self.log('Saved file %s' % filename)
