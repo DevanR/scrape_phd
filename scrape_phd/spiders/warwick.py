@@ -41,6 +41,3 @@ class WarwickSpider(scrapy.Spider):
 
         print("{}, {}".format(name, email))
         self.writer.writerow([name, email])
-
-
-
