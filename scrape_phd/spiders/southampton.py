@@ -6,8 +6,8 @@ import scrapy
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import (NoSuchElementException,
-                                        StaleElementReferenceException,
-                                        TimeoutException)
+        StaleElementReferenceException,
+        TimeoutException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -17,19 +17,18 @@ regex = re.compile('[^a-zA-Z ]')
 class SouthhamptonSpider(scrapy.Spider):
     name = "southampton"
     start_urls = [
-        'http://www.ecs.soton.ac.uk/people'
-    ]
+            'http://www.ecs.soton.ac.uk/people'
+            ]
     filename = "southampton.csv"
     f = open(filename, 'w')
     writer = csv.writer(f, delimiter=',')
 
     driver = webdriver.PhantomJS()
     wait = WebDriverWait(driver, 10)
-    filename = "southampton.csv"
 
     def parse(self, response):
         self.driver.get(response.url)
-        
+
         dismiss_flash_btn = self.wait.until(EC.element_to_be_clickable(
             (By.ID, 'js-flash-dismiss')))
         dismiss_flash_btn.click()
@@ -49,7 +48,7 @@ class SouthhamptonSpider(scrapy.Spider):
         total_pages = len(pages)+1
         # Reset to first page
         pages[0].click()
-        
+
         for page in range(1, total_pages):
             page_btn = self.wait.until(EC.element_to_be_clickable(
                 (By.LINK_TEXT, str(page))))
@@ -65,7 +64,7 @@ class SouthhamptonSpider(scrapy.Spider):
                 yield scrapy.http.Request(url, callback=self.parse_2)
 
         self.driver.quit()
-                
+
 
     def parse_2(self, response):
         soup = BeautifulSoup(response.text, 'lxml')
